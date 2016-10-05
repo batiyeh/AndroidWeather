@@ -2,6 +2,7 @@ package com.example.brianatiyeh.androidweather;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -44,12 +45,28 @@ public class RetrieveForecast extends AsyncTask<Double, Void, ArrayList<Weather>
             int response = connection.getResponseCode(); //200 if okay
 
             //Only get the data if the response code is fine
-            if (response == HttpURLConnection.HTTP_OK){
+            /*if (response == HttpURLConnection.HTTP_OK){
                 InputStream is = connection.getInputStream();
                 String json = convertStreamToString(is);
                 is.close();
 
                 list.addAll(parseJSON(json));
+            }*/
+
+            if(response == HttpURLConnection.HTTP_OK){
+                Log.i("HTTP Response", "Connection was successful");
+                // If we get a 200, retrieve the output of the URL as JSON
+                InputStream is = connection.getInputStream();
+                String json = convertStreamToString(is);
+
+                // Close the connection stream to stop hogging bandwidth and memory, parse the returned JSON
+                is.close();
+                list.addAll(parseJSON(json));
+            } else {
+                String error = connection.getResponseMessage();
+                int error_code = connection.getResponseCode();
+                Log.e("Response Code", String.valueOf(error_code));
+                Log.e("Error Message", error);
             }
 
         } catch (IOException e) {
@@ -66,6 +83,11 @@ public class RetrieveForecast extends AsyncTask<Double, Void, ArrayList<Weather>
         super.onPostExecute(weathers);
 
         Toast.makeText(context, "Count: " + weathers.size(), Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
     }
 
     private ArrayList<Weather> parseJSON(String json) throws JSONException {
