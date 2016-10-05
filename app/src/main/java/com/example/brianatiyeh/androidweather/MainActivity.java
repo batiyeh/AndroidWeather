@@ -20,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitleTextColor(Color.WHITE);
         ListView listView = (ListView) findViewById(id.listView);
 
-
+        RetrieveForecast task = new RetrieveForecast(this);
+        task.execute(51.5072, -0.1275);
 
     }
 }

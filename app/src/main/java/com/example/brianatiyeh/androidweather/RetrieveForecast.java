@@ -1,6 +1,8 @@
 package com.example.brianatiyeh.androidweather;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,25 +21,51 @@ import java.util.ArrayList;
  */
 
 public class RetrieveForecast extends AsyncTask<Double, Void, ArrayList<Weather>>{
+    private Context context;
+
+    public RetrieveForecast(Context context) {
+        this.context = context;
+    }
 
     @Override
     protected ArrayList<Weather> doInBackground(Double... params) {
         ArrayList<Weather> list = new ArrayList<Weather>();
 
         try {
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + params[0] + "&lon=" + params[1] + "&units=imperial&cnt=7");
+            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + params[0] + "&lon=" + params[1] + "&units=imperial&cnt=7&appid=bfa43dcbd89779767af6b8769b3b4fc6");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
             connection.setReadTimeout(10000);
             connection.setConnectTimeout(15000);
             connection.setRequestMethod("GET");
             connection.setDoInput(true);
             connection.connect();
 
+            int response = connection.getResponseCode(); //200 if okay
+
+            //Only get the data if the response code is fine
+            if (response == HttpURLConnection.HTTP_OK){
+                InputStream is = connection.getInputStream();
+                String json = convertStreamToString(is);
+                is.close();
+
+                list.addAll(parseJSON(json));
+            }
+
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
         return list;
+    }
+
+    @Override
+    protected void onPostExecute(ArrayList<Weather> weathers) {
+        super.onPostExecute(weathers);
+
+        Toast.makeText(context, "Count: " + weathers.size(), Toast.LENGTH_SHORT);
     }
 
     private ArrayList<Weather> parseJSON(String json) throws JSONException {
