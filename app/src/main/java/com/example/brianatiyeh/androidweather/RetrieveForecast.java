@@ -1,8 +1,9 @@
 package com.example.brianatiyeh.androidweather;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.os.Build;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
  * Created by Brian Atiyeh on 10/4/2016.
  */
 
+@TargetApi(Build.VERSION_CODES.CUPCAKE)
 public class RetrieveForecast extends AsyncTask<Double, Void, ArrayList<Weather>>{
     private Context context;
 
@@ -33,7 +35,7 @@ public class RetrieveForecast extends AsyncTask<Double, Void, ArrayList<Weather>
         ArrayList<Weather> list = new ArrayList<Weather>();
 
         try {
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + params[0] + "&lon=" + params[1] + "&units=imperial&cnt=7&appid=bfa43dcbd89779767af6b8769b3b4fc6");
+            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + params[0] + "&lon=" + params[1] + "&units=imperial&cnt=7&appid=4e319329c27ecedbd453ac0646c2cf17");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setReadTimeout(10000);
@@ -45,28 +47,12 @@ public class RetrieveForecast extends AsyncTask<Double, Void, ArrayList<Weather>
             int response = connection.getResponseCode(); //200 if okay
 
             //Only get the data if the response code is fine
-            /*if (response == HttpURLConnection.HTTP_OK){
+            if (response == HttpURLConnection.HTTP_OK){
                 InputStream is = connection.getInputStream();
                 String json = convertStreamToString(is);
                 is.close();
 
                 list.addAll(parseJSON(json));
-            }*/
-
-            if(response == HttpURLConnection.HTTP_OK){
-                Log.i("HTTP Response", "Connection was successful");
-                // If we get a 200, retrieve the output of the URL as JSON
-                InputStream is = connection.getInputStream();
-                String json = convertStreamToString(is);
-
-                // Close the connection stream to stop hogging bandwidth and memory, parse the returned JSON
-                is.close();
-                list.addAll(parseJSON(json));
-            } else {
-                String error = connection.getResponseMessage();
-                int error_code = connection.getResponseCode();
-                Log.e("Response Code", String.valueOf(error_code));
-                Log.e("Error Message", error);
             }
 
         } catch (IOException e) {
