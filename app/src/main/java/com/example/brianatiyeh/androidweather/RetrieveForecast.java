@@ -1,10 +1,8 @@
 package com.example.brianatiyeh.androidweather;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,10 +22,10 @@ import java.util.ArrayList;
 
 @TargetApi(Build.VERSION_CODES.CUPCAKE)
 public class RetrieveForecast extends AsyncTask<Double, Void, ArrayList<Weather>>{
-    private Context context;
+    private ForecastAdapter adapter;
 
-    public RetrieveForecast(Context context) {
-        this.context = context;
+    public RetrieveForecast(ForecastAdapter adapter) {
+        this.adapter = adapter;
     }
 
     @Override
@@ -67,8 +65,8 @@ public class RetrieveForecast extends AsyncTask<Double, Void, ArrayList<Weather>
     @Override
     protected void onPostExecute(ArrayList<Weather> weathers) {
         super.onPostExecute(weathers);
-
-        Toast.makeText(context, "Count: " + weathers.size(), Toast.LENGTH_SHORT);
+        adapter.setForecast(weathers);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
